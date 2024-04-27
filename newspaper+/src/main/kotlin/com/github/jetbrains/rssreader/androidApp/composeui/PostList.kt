@@ -103,7 +103,7 @@ fun PostItem(
                     modifier = Modifier.padding(start = padding, end = padding),
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    text = DateUtils.timeAgo(Date(item.date))
+                    text = if (!item.creator.isNullOrEmpty()) "${item.creator} | ${DateUtils.timeAgo(Date(item.date))}" else DateUtils.timeAgo(Date(item.date))
                 )
 //                Spacer(modifier = Modifier.size(padding))
                 item.desc?.let { desc ->

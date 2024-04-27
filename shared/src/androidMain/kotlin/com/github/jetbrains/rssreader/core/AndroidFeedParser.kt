@@ -5,7 +5,6 @@ import com.github.jetbrains.rssreader.core.datasource.network.FeedParser
 import com.github.jetbrains.rssreader.core.entity.Feed
 import com.github.jetbrains.rssreader.core.entity.Post
 import io.github.aakira.napier.Napier
-import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
@@ -46,6 +45,7 @@ internal class AndroidFeedParser : FeedParser {
         var link: String? = null
         var description: String? = null
         var imageUrl: String? = null
+//        var creator: String? = null
         val posts = mutableListOf<Post>()
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -56,6 +56,7 @@ internal class AndroidFeedParser : FeedParser {
                 "description" -> description = readTagText("description", parser)
                 "image" -> imageUrl = readImageUrl(parser)
                 "item" -> posts.add(readPost(title!!, parser))
+//                "creator" -> creator = readTagText("creator", parser)
                 else -> skip(parser)
             }
         }
@@ -86,6 +87,7 @@ internal class AndroidFeedParser : FeedParser {
         var link: String? = null
         var description: String? = null
         var date: String? = null
+        var creator: String? = null
 
         var content: String? = null
 
@@ -97,6 +99,7 @@ internal class AndroidFeedParser : FeedParser {
                 "description" -> description = readTagText("description", parser)
                 "content:encoded" -> content = readTagText("content:encoded", parser)
                 "pubDate" -> date = readTagText("pubDate", parser)
+                "dc:creator" -> creator = readTagText("dc:creator", parser)
                 else -> skip(parser)
             }
         }
@@ -115,7 +118,8 @@ internal class AndroidFeedParser : FeedParser {
             link,
             FeedParser.cleanText(description), // dont use cleanTextCompact
             FeedParser.pullPostImageUrl(link, description, content),
-            dateLong
+            dateLong,
+            creator
         )
     }
 

@@ -87,12 +87,14 @@ internal class IosFeedParser : FeedParser {
             val link = rssMap["link"]
             val description = rssMap["description"]
             val content = rssMap["content:encoded"]
+            val creator = rssMap["dc:creator"]
             return Post(
                 FeedParser.cleanText(rssMap["title"])!!,
                 FeedParser.cleanText(link),
                 FeedParser.cleanTextCompact(description),
                 FeedParser.pullPostImageUrl(link, description, content),
-                date?.toLong() ?: 0
+                date?.toLong() ?: 0,
+                FeedParser.cleanText(creator)
             )
         }
 
@@ -100,7 +102,8 @@ internal class IosFeedParser : FeedParser {
             rssMap: Map<String, String>,
             posts: List<Post>,
             sourceUrl: String,
-            isDefault: Boolean
+            isDefault: Boolean,
+            creator: String
         ) = Feed(
             rssMap["title"]!!,
             rssMap["link"]!!,
@@ -108,7 +111,8 @@ internal class IosFeedParser : FeedParser {
             null,
             posts,
             sourceUrl,
-            isDefault
+            isDefault,
+            creator
         )
     }
 }
