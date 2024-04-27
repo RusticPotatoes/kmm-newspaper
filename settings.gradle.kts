@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 
 
 include(":shared")
-include(":androidApp")
+include(":newspaper+")
