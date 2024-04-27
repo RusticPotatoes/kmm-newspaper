@@ -54,7 +54,7 @@ fun PostItem(
     val padding = 10.dp
     Box {
         Card(
-            modifier = Modifier.fillMaxHeight(),
+//            modifier = Modifier.fillMaxHeight(),
             elevation = 10.dp,
             shape = RoundedCornerShape(padding)
         ) {
@@ -62,14 +62,13 @@ fun PostItem(
                 modifier = Modifier.clickable(onClick = onClick)
             ) {
                 item.imageUrl?.let { url ->
-                    Spacer(modifier = Modifier.size(padding))
                     val painter = rememberAsyncImagePainter(url)
                     Box(
-                        modifier = if (painter.state is AsyncImagePainter.State.Success || painter.state is AsyncImagePainter.State.Loading) Modifier.height(180.dp).fillMaxWidth() else Modifier.height(0.dp)
+                        modifier = Modifier.fillMaxWidth() //.padding(start = padding, end = padding)
                     ) {
                         Image(
                             painter = painter,
-                            modifier = Modifier.align(Alignment.Center).clip(RoundedCornerShape(percent = 5)),
+                            modifier = Modifier.align(Alignment.TopCenter).aspectRatio(16/9f), //.clip(RoundedCornerShape(percent = 5))
                             contentDescription = null
                         )
                         when (painter.state) {

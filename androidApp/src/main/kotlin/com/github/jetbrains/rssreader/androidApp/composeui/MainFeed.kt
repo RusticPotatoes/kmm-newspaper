@@ -72,7 +72,7 @@ fun MainFeedBottomBar(
     }
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(10.dp)
+        contentPadding = PaddingValues(5.dp)
     ) {
         this.items(items) { item ->
             when (item) {
