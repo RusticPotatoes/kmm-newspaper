@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.parcelize)
@@ -20,10 +22,14 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("./key/key.jks")
-            com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(rootDir).apply {
-                storePassword = getProperty("storePwd")
-                keyAlias = getProperty("keyAlias")
-                keyPassword = getProperty("keyPwd")
+            val localProperties = project.rootProject.file("local.properties")
+            if (localProperties.exists()) {
+                val properties = Properties().apply {
+                    localProperties.inputStream().use { load(it) }
+                }
+                storePassword = properties.getProperty("storePwd")
+                keyAlias = properties.getProperty("keyAlias")
+                keyPassword = properties.getProperty("keyPwd")
             }
         }
     }
