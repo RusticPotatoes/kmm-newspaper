@@ -72,7 +72,7 @@ fun MainFeedBottomBar(
     }
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(10.dp)
     ) {
         this.items(items) { item ->
             when (item) {
@@ -88,7 +88,7 @@ fun MainFeedBottomBar(
                 )
                 is Icons.Edit -> EditIcon(onClick = onEditClick)
             }
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }

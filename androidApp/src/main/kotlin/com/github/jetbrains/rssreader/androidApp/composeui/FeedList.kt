@@ -33,7 +33,7 @@ fun FeedList(store: FeedStore) {
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(10.dp)
                 .navigationBarsPadding()
                 .imePadding(),
             onClick = { showAddDialog.value = true }
@@ -91,10 +91,10 @@ fun FeedItem(
     Row(
         Modifier
             .clickable(onClick = onClick, enabled = !feed.isDefault)
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         FeedIcon(feed = feed)
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         Column {
             Text(
                 style = MaterialTheme.typography.body1,

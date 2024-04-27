@@ -16,7 +16,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.jetbrains.rssreader.core.entity.Post
-import java.text.SimpleDateFormat
+import com.github.jetbrains.rssreader.androidApp.utils.DateUtils
+//import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -28,39 +29,34 @@ fun PostList(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(10.dp),
         state = listState
     ) {
         itemsIndexed(posts) { i, post ->
             if (i == 0) Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
             PostItem(post) { onClick(post) }
-            if (i != posts.size - 1) Spacer(modifier = Modifier.size(16.dp))
+            if (i != posts.size - 1) Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }
 
-private val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+//private val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
 
 @Composable
 fun PostItem(
     item: Post,
     onClick: () -> Unit
 ) {
-    val padding = 16.dp
+    val padding = 10.dp
     Box {
         Card(
-            elevation = 16.dp,
+            modifier = Modifier.fillMaxHeight(),
+            elevation = 10.dp,
             shape = RoundedCornerShape(padding)
         ) {
             Column(
                 modifier = Modifier.clickable(onClick = onClick)
             ) {
-                Spacer(modifier = Modifier.size(padding))
-                Text(
-                    modifier = Modifier.padding(start = padding, end = padding),
-                    style = MaterialTheme.typography.h6,
-                    text = item.title
-                )
                 item.imageUrl?.let { url ->
                     Spacer(modifier = Modifier.size(padding))
                     Image(
@@ -69,24 +65,30 @@ fun PostItem(
                         contentDescription = null
                     )
                 }
-                item.desc?.let { desc ->
-                    Spacer(modifier = Modifier.size(padding))
-                    Text(
-                        modifier = Modifier.padding(start = padding, end = padding),
-                        style = MaterialTheme.typography.body1,
-                        maxLines = 5,
-                        overflow = TextOverflow.Ellipsis,
-                        text = desc
-                    )
-                }
                 Spacer(modifier = Modifier.size(padding))
+                Text(
+                    modifier = Modifier.padding(start = padding, end = padding),
+                    style = MaterialTheme.typography.h6,
+                    text = item.title
+                )
+//                Spacer(modifier = Modifier.size(padding))
                 Text(
                     modifier = Modifier.padding(start = padding, end = padding),
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    text = dateFormatter.format(Date(item.date))
+                    text = DateUtils.timeAgo(Date(item.date))
                 )
-                Spacer(modifier = Modifier.size(padding))
+//                Spacer(modifier = Modifier.size(padding))
+                item.desc?.let { desc ->
+                    Spacer(modifier = Modifier.size(padding))
+                    Text(
+                        modifier = Modifier.padding(start = padding, end = padding).fillMaxHeight(),
+                        style = MaterialTheme.typography.body1,
+//                        maxLines = 5,
+//                        overflow = TextOverflow.Ellipsis,
+                        text = desc
+                    )
+                }
             }
         }
     }

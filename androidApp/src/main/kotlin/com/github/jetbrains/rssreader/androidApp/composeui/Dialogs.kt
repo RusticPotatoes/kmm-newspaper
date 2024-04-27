@@ -30,7 +30,7 @@ fun AddFeedDialog(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(8.dp))
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         val input = remember { mutableStateOf(TextFieldValue()) }
         Text(text = stringResource(R.string.rss_feed_url))
@@ -39,7 +39,7 @@ fun AddFeedDialog(
             value = input.value,
             onValueChange = { input.value = it }
         )
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         Button(
             modifier = Modifier.align(Alignment.End),
             onClick = {
@@ -65,10 +65,10 @@ fun DeleteFeedDialog(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(8.dp))
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         Text(text = feed.sourceUrl)
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         Button(
             modifier = Modifier.align(Alignment.End),
             onClick = { onDelete() }
