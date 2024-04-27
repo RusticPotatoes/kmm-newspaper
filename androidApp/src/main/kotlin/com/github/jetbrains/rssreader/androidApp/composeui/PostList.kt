@@ -1,5 +1,6 @@
 package com.github.jetbrains.rssreader.androidApp.composeui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,9 +12,12 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.github.jetbrains.rssreader.core.entity.Post
 import com.github.jetbrains.rssreader.androidApp.utils.DateUtils
@@ -59,11 +63,35 @@ fun PostItem(
             ) {
                 item.imageUrl?.let { url ->
                     Spacer(modifier = Modifier.size(padding))
-                    Image(
-                        painter = rememberAsyncImagePainter(url),
-                        modifier = Modifier.height(180.dp).fillMaxWidth(),
-                        contentDescription = null
-                    )
+                    val painter = rememberAsyncImagePainter(url)
+                    Box(
+                        modifier = if (painter.state is AsyncImagePainter.State.Success || painter.state is AsyncImagePainter.State.Loading) Modifier.height(180.dp).fillMaxWidth() else Modifier.height(0.dp)
+                    ) {
+                        Image(
+                            painter = painter,
+                            modifier = Modifier.align(Alignment.Center).clip(RoundedCornerShape(percent = 5)),
+                            contentDescription = null
+                        )
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Empty -> {
+                                // Handle the empty state
+//                                Text("No image")
+                            }
+                            is AsyncImagePainter.State.Loading -> {
+                                // Display a placeholder while the image is loading
+                                Text("Loading...")
+                            }
+                            is AsyncImagePainter.State.Success -> {
+                                // Handle the success state
+                                // You can leave this empty if you don't need to do anything specific when the image loads successfully
+//                                Text("success?")
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                // Handle the error state
+                                Text("Failed to load image")
+                            }
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.size(padding))
                 Text(
@@ -82,13 +110,15 @@ fun PostItem(
                 item.desc?.let { desc ->
                     Spacer(modifier = Modifier.size(padding))
                     Text(
-                        modifier = Modifier.padding(start = padding, end = padding).fillMaxHeight(),
+                        modifier = Modifier.padding(start = padding, end = padding),
                         style = MaterialTheme.typography.body1,
 //                        maxLines = 5,
 //                        overflow = TextOverflow.Ellipsis,
                         text = desc
                     )
+                    Log.d("PostItem", "Article description: $desc")
                 }
+//                Spacer(modifier = Modifier.size(padding))
             }
         }
     }

@@ -9,19 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val Orange = Color(0xfff8873c)
-private val Purple = Color(0xff6b70fc)
+private val Grey = Color(0xFF797979)
 private val LightColors = lightColors(
     primary = Orange,
     primaryVariant = Orange,
     onPrimary = Color.White,
-    secondary = Purple,
+    secondary = Grey,
     onSecondary = Color.White
 )
 private val DarkColors = darkColors(
     primary = Orange,
     primaryVariant = Orange,
     onPrimary = Color.White,
-    secondary = Purple,
+    secondary = Grey,
     onSecondary = Color.White
 )
 

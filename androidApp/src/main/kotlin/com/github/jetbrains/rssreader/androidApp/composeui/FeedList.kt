@@ -40,7 +40,7 @@ fun FeedList(store: FeedStore) {
         ) {
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_add),
-                modifier = Modifier.align(Alignment.Center),
+//                modifier = Modifier.align(Alignment.),
                 contentDescription = null
             )
         }

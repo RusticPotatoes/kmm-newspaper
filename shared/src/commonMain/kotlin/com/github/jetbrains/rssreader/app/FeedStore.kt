@@ -112,6 +112,22 @@ class FeedStore(
         }
     }
 
+//    private suspend fun loadAllFeeds(forceLoad: Boolean) {
+//        try {
+//            val allFeeds = rssReader.getAllFeeds(forceLoad)
+//            // Log the parsed feed data
+//            allFeeds.forEach { feed ->
+//                Log.d("FeedStore", "Feed title: ${feed.title}")
+//                feed.posts.forEach { post ->
+//                    Log.d("FeedStore", "Post title: ${post.title}")
+//                    Log.d("FeedStore", "Post description: ${post.desc}")
+//                }
+//            }
+//            dispatch(FeedAction.Data(allFeeds))
+//        } catch (e: Exception) {
+//            dispatch(FeedAction.Error(e))
+//        }
+//    }
     private suspend fun loadAllFeeds(forceLoad: Boolean) {
         try {
             val allFeeds = rssReader.getAllFeeds(forceLoad)
