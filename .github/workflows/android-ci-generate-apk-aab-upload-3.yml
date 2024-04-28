@@ -35,16 +35,6 @@ jobs:
 
     steps:
 
-      - name: Create key directory
-        run: mkdir -p ${{ env.ks_path }}
-
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > ${{ env.ks_path }}/keystore.jks
-    
-      - name: List keystore directory
-        run: ls -la ${{ env.ks_path }}
-
       - uses: actions/checkout@v3
 
       - name: Cache Gradle packages
@@ -78,6 +68,19 @@ jobs:
       # Run Tests Build
       - name: Run gradle tests
         run: ./gradlew test
+
+      - name: Create key directory
+        run: mkdir -p ${{ env.ks_path }}
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > ${{ env.ks_path }}/keystore.jks
+    
+      - name: List keystore directory
+        run: ls -la ${{ env.ks_path }}
+
+      - name: list pwd
+        run: pwd
 
       # Run Build Project
       - name: Build gradle project
