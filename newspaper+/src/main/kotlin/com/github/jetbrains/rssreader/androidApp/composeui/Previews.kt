@@ -39,6 +39,7 @@ private fun FeedIconSelectedPreview() {
 
 private object PreviewData {
     val post = Post(
+        feedTitle = "Kotlin Blog",
         title = "Productive Server-Side Development With Kotlin: Stories From The Industry",
         link = "https://blog.jetbrains.com/kotlin/2020/11/productive-server-side-development-with-kotlin-stories/",
         desc = "Kotlin was created as an alternative to Java, meaning that its application area within the JVM ecosystem was meant to be the same as Java’s. Obviously, this includes server-side development. We would love...",

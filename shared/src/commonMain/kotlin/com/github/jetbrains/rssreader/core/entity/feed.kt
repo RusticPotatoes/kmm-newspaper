@@ -37,5 +37,6 @@ data class Post(
     @SerialName("description") val desc: String?,
     @SerialName("imageUrl") val imageUrl: String?,
     @SerialName("date") val date: Long,
-    @SerialName("creator") val creator: String? = null
+    @SerialName("creator") val creator: String? = null,
+    val feedTitle: String? = null
 )

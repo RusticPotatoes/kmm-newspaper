@@ -24,6 +24,7 @@ internal class IosFeedParser : FeedParser {
         }
 
     private class RssFeedParser(
+//        private val feedTitle: String,
         private val sourceUrl: String,
         private val isDefault: Boolean,
         private val onEnd: (Feed) -> Unit
@@ -94,7 +95,8 @@ internal class IosFeedParser : FeedParser {
                 FeedParser.cleanTextCompact(description),
                 FeedParser.pullPostImageUrl(link, description, content),
                 date?.toLong() ?: 0,
-                FeedParser.cleanText(creator)
+                FeedParser.cleanText(creator),
+//                feedTitle
             )
         }
 
@@ -103,16 +105,15 @@ internal class IosFeedParser : FeedParser {
             posts: List<Post>,
             sourceUrl: String,
             isDefault: Boolean,
-            creator: String
+//            creator: String
         ) = Feed(
             rssMap["title"]!!,
             rssMap["link"]!!,
             rssMap["description"]!!,
-            null,
+            rssMap["creator"]!!,
             posts,
             sourceUrl,
             isDefault,
-            creator
         )
     }
 }

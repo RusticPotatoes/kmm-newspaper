@@ -33,7 +33,7 @@ fun PostList(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(10.dp),
+        contentPadding = PaddingValues(0.dp),
         state = listState
     ) {
         itemsIndexed(posts) { i, post ->
@@ -103,7 +103,21 @@ fun PostItem(
                     modifier = Modifier.padding(start = padding, end = padding),
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    text = if (!item.creator.isNullOrEmpty()) "${item.creator} | ${DateUtils.timeAgo(Date(item.date))}" else DateUtils.timeAgo(Date(item.date))
+                    text = buildString {
+                        if (!item.creator.isNullOrEmpty()) {
+                            append(item.creator)
+                            if (!item.feedTitle.isNullOrEmpty()) {
+                                append(", ")
+                            }
+                        }
+                        if (!item.feedTitle.isNullOrEmpty()) {
+                            append(item.feedTitle)
+                        }
+                        if (isNotEmpty()) {
+                            append(" | ")
+                        }
+                        append(DateUtils.timeAgo(Date(item.date)))
+                    }
                 )
 //                Spacer(modifier = Modifier.size(padding))
                 item.desc?.let { desc ->

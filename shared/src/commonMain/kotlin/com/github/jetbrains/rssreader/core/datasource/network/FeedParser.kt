@@ -28,25 +28,22 @@ interface FeedParser {
 //                ?.trim()
 
         fun cleanText(text: String?): String? {
-            val paragraphs = text?.split("\n")
+            val paragraphs = text?.trim()?.split(Regex("(\r\n|\n\r|\r|\n){2,}"))
             val cleanedParagraphs = mutableListOf<String>()
             val skipStrings = listOf("Nickname:", "Password:")
 
             paragraphs?.forEach { paragraph ->
-                val cleanedText = paragraph.replace(Regex("<.*?>"), "")
+                val cleanedText = paragraph.replace(Regex("<.*?>"), "").trim()
                 if (cleanedText.isNotEmpty() && !skipStrings.any { cleanedText.contains(it) }) {
                     cleanedParagraphs.add(cleanedText)
                 }
             }
 
-            // Join the cleaned paragraphs into a single string, using "\n" as the separator
-            val joinedText = cleanedParagraphs.joinToString("\n")
-
-            // Replace multiple consecutive new lines with a single new line
-            val normalizedText = joinedText.replace(Regex("\n+"), "\n")
+            // Join the cleaned paragraphs into a single string, using "\n\n" as the separator
+            val joinedText = cleanedParagraphs.joinToString("\n\n")
 
             // Remove any new lines at the start or end of the string
-            return normalizedText.trim('\n')
+            return joinedText.trim('\n')
         }
 
         internal fun cleanTextCompact(text: String?) = cleanText(text)?.take(300)

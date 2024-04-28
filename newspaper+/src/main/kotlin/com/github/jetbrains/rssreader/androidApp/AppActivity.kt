@@ -1,5 +1,6 @@
 package com.github.jetbrains.rssreader.androidApp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import org.koin.android.ext.android.inject
 
 class AppActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

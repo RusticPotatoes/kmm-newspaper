@@ -26,13 +26,19 @@ internal class AndroidFeedParser : FeedParser {
             parser.setInput(reader)
 
             var tag = parser.nextTag()
-            while (tag != XmlPullParser.START_TAG && parser.name != "rss") {
+            while (tag != XmlPullParser.START_TAG) {
                 skip(parser)
                 tag = parser.next()
             }
-            parser.nextTag()
 
-            feed = readFeed(sourceUrl, parser, isDefault)
+            feed = when (parser.name) {
+                "rss" -> {
+                    parser.nextTag() // Move to the next tag
+                    readFeed(sourceUrl, parser, isDefault)
+                }
+                "rdf:RDF" -> readRdfFeed(sourceUrl, parser, isDefault)
+                else -> throw IllegalArgumentException("Unsupported feed type: ${parser.name}")
+            }
         }
 
         return@withContext feed
@@ -45,7 +51,6 @@ internal class AndroidFeedParser : FeedParser {
         var link: String? = null
         var description: String? = null
         var imageUrl: String? = null
-//        var creator: String? = null
         val posts = mutableListOf<Post>()
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -56,7 +61,6 @@ internal class AndroidFeedParser : FeedParser {
                 "description" -> description = readTagText("description", parser)
                 "image" -> imageUrl = readImageUrl(parser)
                 "item" -> posts.add(readPost(title!!, parser))
-//                "creator" -> creator = readTagText("creator", parser)
                 else -> skip(parser)
             }
         }
@@ -78,6 +82,115 @@ internal class AndroidFeedParser : FeedParser {
         }
 
         return url
+    }
+
+    private fun readRdfPost(feedTitle: String, parser: XmlPullParser): Post {
+        parser.require(XmlPullParser.START_TAG, null, "item")
+
+        var title: String? = null
+        var link: String? = null
+        var description: String? = null
+        var date: String? = null
+        var creator: String? = null
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.eventType != XmlPullParser.START_TAG) continue
+            when (parser.name) {
+                "title" -> title = readTagText("title", parser)
+                "link" -> link = readTagText("link", parser)
+                "description" -> description = readTagText("description", parser)
+                "dc:date" -> date = readTagText("dc:date", parser)
+                "dc:creator" -> creator = readTagText("dc:creator", parser)
+                else -> skip(parser)
+            }
+        }
+
+        val dateLong: Long = date?.let {
+//            val its = it.replace(" +0000", " GMT") // this format is terrible
+//            val itst = its.replace("+00:00", " GMT")
+            val dateFormats = listOf(
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss xx", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH), // for terrible format
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH),
+            )
+
+            var parsedDate: ZonedDateTime? = null
+            var parseException: Throwable? = null
+
+            for (dateFormat in dateFormats) {
+                try {
+                    parsedDate = ZonedDateTime.parse(it, dateFormat)
+                    break
+                } catch (e: Throwable) {
+                    parseException = e
+                }
+            }
+
+            if (parsedDate != null) {
+                parsedDate.toEpochSecond() * 1000
+            } else {
+                Napier.e("Parse date error: ${parseException?.message}")
+                null
+            }
+        } ?: System.currentTimeMillis()
+
+
+        return Post(
+            title ?: feedTitle,
+            link,
+            FeedParser.cleanText(description), // dont use cleanTextCompact
+            null, // for rdf dont pull image, likely a stock twitter one
+            dateLong,
+            creator,
+            feedTitle = feedTitle
+        )
+    }
+
+    private fun readRdfFeed(sourceUrl: String, parser: XmlPullParser, isDefault: Boolean): Feed {
+        parser.require(XmlPullParser.START_TAG, null, "rdf:RDF")
+
+        var title: String? = null
+        var link: String? = null
+        var description: String? = null
+        var imageUrl: String? = null
+        val posts = mutableListOf<Post>()
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.eventType != XmlPullParser.START_TAG) continue
+            when (parser.name) {
+                "channel" -> {
+                    val channelProperties = readChannelProperties(parser)
+                    title = channelProperties["title"]
+                    link = channelProperties["link"]
+                    description = channelProperties["description"]
+                }
+                "image" -> imageUrl = readImageUrl(parser)
+                "item" -> posts.add(readRdfPost(title!!, parser))
+                else -> skip(parser)
+            }
+        }
+
+        return Feed(title!!, link!!, description!!, imageUrl, posts, sourceUrl, isDefault)
+    }
+
+    private fun readChannelProperties(parser: XmlPullParser): Map<String, String?> {
+        val properties = mutableMapOf<String, String?>()
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.eventType != XmlPullParser.START_TAG) continue
+            when (parser.name) {
+                "title", "link", "description" -> properties[parser.name] = readTagText(parser.name, parser)
+                else -> skip(parser)
+            }
+        }
+
+        return properties
     }
 
     private fun readPost(feedTitle: String, parser: XmlPullParser): Post {
@@ -105,10 +218,36 @@ internal class AndroidFeedParser : FeedParser {
         }
 
         val dateLong: Long = date?.let {
-            try {
-                ZonedDateTime.parse(date, dateFormat).toEpochSecond() * 1000
-            } catch (e: Throwable) {
-                Napier.e("Parse date error: ${e.message}")
+//            val its = it.replace(" +0000", " GMT") // this format is terrible
+//            val itst = its.replace("+00:00", " GMT")
+            val dateFormats = listOf(
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss xx", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH), // for terrible format
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH),
+            )
+
+            var parsedDate: ZonedDateTime? = null
+            var parseException: Throwable? = null
+
+            for (dateFormat in dateFormats) {
+                try {
+                    parsedDate = ZonedDateTime.parse(it, dateFormat)
+                    break
+                } catch (e: Throwable) {
+                    parseException = e
+                }
+            }
+
+            if (parsedDate != null) {
+                parsedDate.toEpochSecond() * 1000
+            } else {
+                Napier.e("Parse date error: ${parseException?.message}")
                 null
             }
         } ?: System.currentTimeMillis()
@@ -119,7 +258,8 @@ internal class AndroidFeedParser : FeedParser {
             FeedParser.cleanText(description), // dont use cleanTextCompact
             FeedParser.pullPostImageUrl(link, description, content),
             dateLong,
-            creator
+            creator,
+            feedTitle = feedTitle
         )
     }
 
