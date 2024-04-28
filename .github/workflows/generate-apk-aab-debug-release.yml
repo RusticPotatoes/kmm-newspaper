@@ -8,7 +8,7 @@ env:
   playstore_name: Newspaper+
 
   # Keystore Path
-  ks_path: '/home/runner/work/newspaper-/newspaper-/newspaper+/key'
+  ks_path: 'keystore'
 
   # Keystore Password
   ks_store_pass: ${{ secrets.SIGNING_KEY_PASSWORD }}
@@ -74,7 +74,7 @@ jobs:
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: ${{ env.ks_path }}/key.jks
+          fileName: ${{ env.ks_path }}/keystore.jks
           encodedString: ${{ secrets.KEYSTORE }}
 
       # Run Build Project
