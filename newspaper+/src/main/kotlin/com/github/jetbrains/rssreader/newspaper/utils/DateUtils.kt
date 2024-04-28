@@ -1,4 +1,4 @@
-package com.github.jetbrains.rssreader.androidApp.utils
+package com.github.jetbrains.rssreader.newspaper.utils
 
 import java.time.LocalDateTime
 import java.time.ZoneId

@@ -1,4 +1,4 @@
-package com.github.jetbrains.rssreader.androidApp.composeui
+package com.github.jetbrains.rssreader.newspaper.composeui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -14,13 +14,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.github.jetbrains.rssreader.core.entity.Post
-import com.github.jetbrains.rssreader.androidApp.utils.DateUtils
+import com.github.jetbrains.rssreader.newspaper.utils.DateUtils
 //import java.text.SimpleDateFormat
 import java.util.*
 

@@ -1,7 +1,7 @@
-package com.github.jetbrains.rssreader.androidApp
+package com.github.jetbrains.rssreader.newspaper
 
 import android.app.Application
-import com.github.jetbrains.rssreader.androidApp.sync.RefreshWorker
+import com.github.jetbrains.rssreader.newspaper.sync.RefreshWorker
 import com.github.jetbrains.rssreader.app.FeedStore
 import com.github.jetbrains.rssreader.core.RssReader
 import com.github.jetbrains.rssreader.core.create
