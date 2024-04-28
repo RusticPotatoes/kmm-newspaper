@@ -1,7 +1,8 @@
-package com.github.jetbrains.rssreader.androidApp.composeui
+package com.github.jetbrains.rssreader.newspaper.composeui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import com.github.jetbrains.rssreader.newspaper.R
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -16,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.github.jetbrains.rssreader.androidApp.R
 import com.github.jetbrains.rssreader.core.entity.Feed
 
 @Composable

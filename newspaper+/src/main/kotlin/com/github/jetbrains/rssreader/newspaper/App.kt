@@ -1,7 +1,8 @@
-package com.github.jetbrains.rssreader.androidApp
+package com.github.jetbrains.rssreader.newspaper
 
 import android.app.Application
-import com.github.jetbrains.rssreader.androidApp.sync.RefreshWorker
+import com.github.jetbrains.rssreader.newspaper.BuildConfig
+import com.github.jetbrains.rssreader.newspaper.sync.RefreshWorker
 import com.github.jetbrains.rssreader.app.FeedStore
 import com.github.jetbrains.rssreader.core.RssReader
 import com.github.jetbrains.rssreader.core.create
@@ -19,7 +20,7 @@ class App : Application() {
         launchBackgroundSync()
     }
 
-    private val appModule = module {
+    private val newspaper = module {
         single { RssReader.create(get(), BuildConfig.DEBUG) }
         single { FeedStore(get()) }
     }
@@ -29,7 +30,7 @@ class App : Application() {
             if (BuildConfig.DEBUG) androidLogger(Level.ERROR)
 
             androidContext(this@App)
-            modules(appModule)
+            modules(newspaper)
         }
     }
 
