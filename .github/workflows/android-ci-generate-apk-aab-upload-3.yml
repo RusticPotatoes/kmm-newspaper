@@ -8,7 +8,7 @@ env:
   playstore_name: Newspaper+
 
   # Keystore Path
-  ks_path: /home/runner/work/newspaper-/newspaper-/newspaper+/key
+  ks_path: '/home/runner/work/newspaper-/newspaper-/newspaper+/key'
 
   # Keystore Password
   ks_store_pass: ${{ secrets.SIGNING_KEY_PASSWORD }}
@@ -35,16 +35,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Create key directory
-        run: mkdir -p ${{ env.ks_path }}/
-
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: ${{ env.ks_path }}/key.jks
-          encodedString: ${{ secrets.KEYSTORE }}
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
@@ -77,6 +67,16 @@ jobs:
       # Run Tests Build
       - name: Run gradle tests
         run: ./gradlew test
+
+      - name: Create key directory
+        run: mkdir -p ${{ env.ks_path }}
+
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: ${{ env.ks_path }}/key.jks
+          encodedString: ${{ secrets.KEYSTORE }}
 
       # Run Build Project
       - name: Build gradle project
