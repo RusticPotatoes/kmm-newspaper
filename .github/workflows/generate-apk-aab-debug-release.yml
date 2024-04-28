@@ -7,11 +7,22 @@ env:
   # The name of the Play Store
   playstore_name: Newspaper+
 
-on:
+  # Keystore Path
+  ks_path: './newspaper+/key/key.jks'
 
+  # Keystore Password
+  ks_store_pass: ${{ secrets.SIGNING_KEY_PASSWORD }}
+
+  # Keystore Alias
+  ks_alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+
+  # Keystore Alias Password
+  ks_alias_pass: ${{ secrets.SIGNING_STORE_PASSWORD }}
+
+on:
   push:
     branches:
-      - 'develop/**'
+      - develop
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,6 +34,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: './newspaper+/key/key.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
