@@ -8,7 +8,7 @@ env:
   playstore_name: Newspaper+
 
   # Keystore Path
-  ks_path: 'keystore'
+  ks_path: 'newspaper+/keystore'
 
   # Keystore Password
   ks_store_pass: ${{ secrets.SIGNING_KEY_PASSWORD }}
@@ -78,9 +78,6 @@ jobs:
     
       - name: List keystore directory
         run: ls -la ${{ env.ks_path }}
-
-      - name: list pwd
-        run: pwd
 
       # Run Build Project
       - name: Build gradle project
