@@ -1,4 +1,4 @@
-package com.github.jetbrains.rssreader.newspaper.composeui
+package com.github.jetbrains.rssreader.androidApp.composeui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

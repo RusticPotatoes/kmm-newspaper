@@ -1,4 +1,4 @@
-package com.github.jetbrains.rssreader.newspaper
+package com.github.jetbrains.rssreader.androidApp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,8 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
-import com.github.jetbrains.rssreader.newspaper.composeui.AppTheme
-import com.github.jetbrains.rssreader.newspaper.composeui.MainScreen
+import com.github.jetbrains.rssreader.androidApp.composeui.AppTheme
+import com.github.jetbrains.rssreader.androidApp.composeui.MainScreen
 import com.github.jetbrains.rssreader.app.FeedSideEffect
 import com.github.jetbrains.rssreader.app.FeedStore
 import kotlinx.coroutines.flow.*
