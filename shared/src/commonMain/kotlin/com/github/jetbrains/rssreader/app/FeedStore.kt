@@ -26,6 +26,7 @@ sealed class FeedAction : Action {
     data class SelectFeed(val feed: Feed?) : FeedAction()
     data class Data(val feeds: List<Feed>) : FeedAction()
     data class Error(val error: Exception) : FeedAction()
+    data class Edit(val oldUrl: String, val newUrl: String) : FeedAction()
 }
 
 sealed class FeedSideEffect : Effect {
@@ -104,6 +105,15 @@ class FeedStore(
                     oldState
                 }
             }
+            is FeedAction.Edit -> {
+                if (oldState.progress) {
+                    launch { sideEffect.emit(FeedSideEffect.Error(Exception("In progress"))) }
+                    FeedState(false, oldState.feeds)
+                } else {
+                    launch { editFeed(action.oldUrl, action.newUrl) }
+                    FeedState(true, oldState.feeds)
+                }
+            }
         }
 
         if (newState != oldState) {
@@ -131,6 +141,16 @@ class FeedStore(
     private suspend fun loadAllFeeds(forceLoad: Boolean) {
         try {
             val allFeeds = rssReader.getAllFeeds(forceLoad)
+            dispatch(FeedAction.Data(allFeeds))
+        } catch (e: Exception) {
+            dispatch(FeedAction.Error(e))
+        }
+    }
+
+    private suspend fun editFeed(oldUrl: String, newUrl: String) {
+        try {
+            rssReader.editFeed(oldUrl, newUrl)
+            val allFeeds = rssReader.getAllFeeds(false)
             dispatch(FeedAction.Data(allFeeds))
         } catch (e: Exception) {
             dispatch(FeedAction.Error(e))

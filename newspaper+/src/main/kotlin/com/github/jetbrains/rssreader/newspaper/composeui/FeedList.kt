@@ -6,19 +6,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.github.jetbrains.rssreader.newspaper.R
 import com.github.jetbrains.rssreader.app.FeedAction
 import com.github.jetbrains.rssreader.app.FeedStore
 import com.github.jetbrains.rssreader.core.entity.Feed
-
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.TextField
+//
 @Composable
 fun FeedList(store: FeedStore) {
     Box(
@@ -26,10 +30,13 @@ fun FeedList(store: FeedStore) {
     ) {
         val state = store.observeState().collectAsState()
         val showAddDialog = remember { mutableStateOf(false) }
-        val feedForDelete = remember<MutableState<Feed?>> { mutableStateOf(null) }
-        FeedItemList(feeds = state.value.feeds) {
-            feedForDelete.value = it
-        }
+        val showEditDialog = remember { mutableStateOf(false) }
+        val selectedFeed = remember { mutableStateOf<Feed?>(null) }
+
+        FeedItemList(feeds = state.value.feeds, onClick = { feed ->
+            selectedFeed.value = feed
+            showEditDialog.value = true
+        })
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -40,7 +47,6 @@ fun FeedList(store: FeedStore) {
         ) {
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_add),
-//                modifier = Modifier.align(Alignment.),
                 contentDescription = null
             )
         }
@@ -55,17 +61,26 @@ fun FeedList(store: FeedStore) {
                 }
             )
         }
-        feedForDelete.value?.let { feed ->
-            DeleteFeedDialog(
-                feed = feed,
-                onDelete = {
-                    store.dispatch(FeedAction.Delete(feed.sourceUrl))
-                    feedForDelete.value = null
-                },
-                onDismiss = {
-                    feedForDelete.value = null
-                }
-            )
+        if (showEditDialog.value) {
+            selectedFeed.value?.let { feed ->
+                EditFeedDialog(
+                    feed = feed,
+                    onEdit = { newUrl ->
+                        store.dispatch(FeedAction.Edit(feed.sourceUrl, newUrl))
+                        selectedFeed.value = null
+                        showEditDialog.value = false
+                    },
+                    onDelete = {
+                        store.dispatch(FeedAction.Delete(feed.sourceUrl))
+                        selectedFeed.value = null
+                        showEditDialog.value = false
+                    },
+                    onDismiss = {
+                        selectedFeed.value = null
+                        showEditDialog.value = false
+                    }
+                )
+            }
         }
     }
 }
@@ -90,7 +105,7 @@ fun FeedItem(
 ) {
     Row(
         Modifier
-            .clickable(onClick = onClick, enabled = !feed.isDefault)
+            .clickable(onClick = onClick)
             .padding(10.dp)
     ) {
         FeedIcon(feed = feed)
@@ -106,4 +121,53 @@ fun FeedItem(
             )
         }
     }
+}
+
+@Composable
+fun EditFeedDialog(
+    feed: Feed,
+    onEdit: (newUrl: String) -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    var newUrl by remember { mutableStateOf(feed.sourceUrl) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.edit)) },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.rss_feed_url),
+                    style = MaterialTheme.typography.body1
+                )
+                TextField(
+                    value = newUrl,
+                    onValueChange = { newUrl = it }
+                )
+            }
+        },
+        confirmButton = {
+            Row {
+                Button(
+                    onClick = {
+                        onEdit(newUrl)
+                    }
+                ) {
+                    Text(text = stringResource(R.string.save))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = onDelete
+                ) {
+                    Text(text = stringResource(R.string.remove))
+                }
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        }
+    )
 }

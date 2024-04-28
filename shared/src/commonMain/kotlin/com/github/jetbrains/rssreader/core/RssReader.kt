@@ -10,7 +10,7 @@ import kotlinx.coroutines.coroutineScope
 class RssReader internal constructor(
     private val feedLoader: FeedLoader,
     private val feedStorage: FeedStorage,
-    private val settings: Settings = Settings(setOf("https://techradar.com/rss","https://gizmodo.com/rss","https://rss.slashdot.org/Slashdot/slashdotMain","https://wired.com/feed/rss","https://rsshub.app/apnews/topics/apf-topnews"))
+    private val settings: Settings = Settings(setOf("https://techradar.com/rss","https://gizmodo.com/rss","https://rss.slashdot.org/Slashdot/slashdotMain","https://wired.com/feed/rss"))//,"https://rsshub.app/apnews/topics/apf-topnews"))
 ) {
     @Throws(Exception::class)
     suspend fun getAllFeeds(
@@ -28,6 +28,15 @@ class RssReader internal constructor(
         }
 
         return feeds
+    }
+
+    suspend fun editFeed(oldUrl: String, newUrl: String) {
+        val oldFeed = feedLoader.getFeed(oldUrl, settings.isDefault(oldUrl))
+        val newFeed = oldFeed.copy(sourceUrl = newUrl)
+        //delete old feed
+        feedStorage.deleteFeed(oldUrl)
+        //add new feed
+        feedStorage.saveFeed(newFeed)
     }
 
     @Throws(Exception::class)
