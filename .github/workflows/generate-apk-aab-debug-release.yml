@@ -35,6 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create key directory
+        run: mkdir -p ./newspaper+/key/
+
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
