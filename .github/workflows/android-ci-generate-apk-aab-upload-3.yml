@@ -39,11 +39,8 @@ jobs:
         run: mkdir -p ${{ env.ks_path }}
 
       - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: ${{ env.ks_path }}/keystore.jks
-          encodedString: ${{ secrets.KEYSTORE }}
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > ${{ env.ks_path }}/keystore.jks
     
       - name: List keystore directory
         run: ls -la ${{ env.ks_path }}
