@@ -14,23 +14,25 @@ android {
         minSdk = (findProperty("android.minSdk") as String).toInt()
         targetSdk = (findProperty("android.targetSdk") as String).toInt()
 
-        applicationId = "com.github.jetbrains.rssreader.androidApp"
-        versionCode = 2
-        versionName = "1.1"
+        applicationId = "com.github.jetbrains.rssreader.newspaper"
+        versionCode = 1
+        versionName = "1.0"
     }
 
     signingConfigs {
         create("release") {
-            storeFile = file("./key/key.jks")
-            val localProperties = project.rootProject.file("local.properties")
-            if (localProperties.exists()) {
-                val properties = Properties().apply {
-                    localProperties.inputStream().use { load(it) }
-                }
-                storePassword = properties.getProperty("storePwd")
-                keyAlias = properties.getProperty("keyAlias")
-                keyPassword = properties.getProperty("keyPwd")
+            val tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+            val allFilesFromDir = File(tmpFilePath).listFiles()
+
+            if (allFilesFromDir != null && allFilesFromDir.isNotEmpty()) {
+                val keystoreFile = allFilesFromDir.first()
+                keystoreFile.renameTo(File("keystore/keystore.jks"))
             }
+
+            storeFile = file("keystore/keystore.jks")
+            storePassword = System.getenv("ks_store_pass")
+            keyAlias = System.getenv("ks_alias")
+            keyPassword = System.getenv("ks_alias_pass")
         }
     }
 

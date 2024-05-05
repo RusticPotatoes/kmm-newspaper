@@ -13,3 +13,5 @@ Pods/
 /androidApp/key
 *.jks
 *yarn.lock
+*.aab
+keystore
